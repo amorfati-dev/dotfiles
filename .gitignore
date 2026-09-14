@@ -1,0 +1,33 @@
+# Private overrides and credentials belong outside this public repository.
+local/
+*.local
+*.local.*
+!examples/*.local.example
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+id_ed25519*
+.ssh/
+.gnupg/
+.netrc
+.git-credentials
+
+# History, backups, caches, and machine-generated files.
+*_history
+.zsh_history
+.DS_Store
+*.swp
+*.swo
+*.bak
+*.save
+*~
+.cache/
+backups/
+Brewfile.next
+__pycache__/
+*.py[cod]

@@ -1,0 +1,6 @@
+# Copy to ~/.zshrc.local. Keep that file out of Git.
+# Retrieve credentials from your password manager when needed.
+# Do not put real credentials in this example file.
+
+# Uncomment to show the system information banner when opening a terminal.
+# export DOTFILES_SHOW_SYSTEM_INFO=1

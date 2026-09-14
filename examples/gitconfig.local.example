@@ -1,0 +1,4 @@
+# Copy to ~/.gitconfig.local and replace these placeholders.
+[user]
+    name = Your Name
+    email = YOUR_GITHUB_NOREPLY_EMAIL
