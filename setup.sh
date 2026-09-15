@@ -49,8 +49,17 @@ repo_dir="$(CDPATH= cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 backup_root="$target_home/.local/state/dotfiles/backups"
 backup_dir=''
 
-sources=('zsh/.zshrc' 'zsh/.zprofile' 'git/config' 'git/ignore' 'starship/starship.toml' 'ghostty/config')
-destinations=('.zshrc' '.zprofile' '.gitconfig' '.config/git/ignore' '.config/starship.toml' '.config/ghostty/config')
+sources=(
+  'zsh/.zshrc' 'zsh/.zprofile' 'git/config' 'git/ignore'
+  'starship/starship.toml' 'ghostty/config' 'nvim' 'tmux/.tmux.conf'
+  'aerospace' 'sketchybar' 'karabiner' 'atuin/config.toml' 'htop/htoprc'
+)
+destinations=(
+  '.zshrc' '.zprofile' '.gitconfig' '.config/git/ignore'
+  '.config/starship.toml' '.config/ghostty/config' '.config/nvim' '.tmux.conf'
+  '.config/aerospace' '.config/sketchybar' '.config/karabiner'
+  '.config/atuin/config.toml' '.config/htop/htoprc'
+)
 
 # Refuse symlinked parent directories, even when they point inside the home.
 # That keeps writes and backups within the selected home without following links.
@@ -73,7 +82,7 @@ check_parent() {
 
 # Finish checks before changing anything.
 for i in "${!sources[@]}"; do
-  [ -f "$repo_dir/${sources[$i]}" ] || fail "Missing configuration: ${sources[$i]}"
+  [ -f "$repo_dir/${sources[$i]}" ] || [ -d "$repo_dir/${sources[$i]}" ] || fail "Missing configuration: ${sources[$i]}"
   check_parent "${destinations[$i]}"
 done
 check_parent '.local/state/dotfiles/backups/placeholder'

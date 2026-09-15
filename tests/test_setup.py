@@ -18,6 +18,13 @@ LINKS = {
     "git/ignore": ".config/git/ignore",
     "starship/starship.toml": ".config/starship.toml",
     "ghostty/config": ".config/ghostty/config",
+    "nvim": ".config/nvim",
+    "tmux/.tmux.conf": ".tmux.conf",
+    "aerospace": ".config/aerospace",
+    "sketchybar": ".config/sketchybar",
+    "karabiner": ".config/karabiner",
+    "atuin/config.toml": ".config/atuin/config.toml",
+    "htop/htoprc": ".config/htop/htoprc",
 }
 
 
@@ -50,7 +57,10 @@ class SetupSafetyTests(unittest.TestCase):
         for source in LINKS:
             target = self.repo / source
             target.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(REPO / source, target)
+            if (REPO / source).is_dir():
+                shutil.copytree(REPO / source, target, symlinks=True)
+            else:
+                shutil.copy2(REPO / source, target)
 
     def run_setup(self, *arguments):
         return subprocess.run(
@@ -70,6 +80,9 @@ class SetupSafetyTests(unittest.TestCase):
 
     def test_preview_changes_nothing(self):
         (self.home / ".zshrc").write_text("existing shell settings\n")
+        nested = self.home / ".config/nvim/lua/personal"
+        nested.mkdir(parents=True)
+        (nested / "settings.lua").write_text("-- existing editor settings\n")
         before = snapshot(self.root)
         result = self.run_setup()
         self.assert_success(result)
@@ -78,14 +91,24 @@ class SetupSafetyTests(unittest.TestCase):
         self.assertEqual(snapshot(self.root), before)
 
     def test_apply_preserves_conflicts_and_broken_symlink(self):
-        for destination in LINKS.values():
+        for source, destination in LINKS.items():
             path = self.home / destination
             path.parent.mkdir(parents=True, exist_ok=True)
             if destination == ".gitconfig":
                 path.symlink_to("missing-personal-config")
+            elif destination == ".config/nvim":
+                nested = path / "lua/personal"
+                nested.mkdir(parents=True)
+                (nested / "settings.lua").write_text("-- preserve nested settings\n")
+                (path / ".private-note").write_text("preserve hidden content\n")
+                (path / "empty-directory").mkdir()
+                (path / "local.lua").symlink_to("lua/personal/settings.lua")
             elif destination == ".config/ghostty/config":
                 path.mkdir()
                 (path / "keep.txt").write_text("directory conflict\n")
+            elif (self.repo / source).is_dir():
+                path.mkdir()
+                (path / "keep.txt").write_text("original " + destination)
             else:
                 path.write_text("original " + destination)
         originals = snapshot(self.home)
@@ -105,7 +128,7 @@ class SetupSafetyTests(unittest.TestCase):
         self.assertEqual(snapshot(self.root), before)
 
     def test_missing_last_source_fails_before_changes(self):
-        (self.repo / "ghostty/config").unlink()
+        (self.repo / "htop/htoprc").unlink()
         (self.home / ".zshrc").write_text("keep this\n")
         before = snapshot(self.root)
         result = self.run_setup("--apply")
@@ -114,7 +137,10 @@ class SetupSafetyTests(unittest.TestCase):
         self.assertEqual(snapshot(self.root), before)
 
     def test_symlinked_parent_is_rejected_before_changes(self):
-        for parent in (".config", ".config/ghostty", ".local/state"):
+        for parent in (
+            ".config", ".config/ghostty", ".config/atuin", ".config/htop",
+            ".local/state",
+        ):
             with self.subTest(parent=parent):
                 shutil.rmtree(self.home)
                 self.home.mkdir()
@@ -128,6 +154,26 @@ class SetupSafetyTests(unittest.TestCase):
                 self.assertNotEqual(result.returncode, 0)
                 self.assertIn("Parent directory is a symlink:", result.stderr)
                 self.assertEqual(snapshot(self.root), before)
+
+    def test_atuin_history_neighbors_are_preserved(self):
+        atuin = self.home / ".config/atuin"
+        atuin.mkdir(parents=True)
+        history = atuin / "history.db"
+        history.write_bytes(b"private history fixture\x00\xff")
+        sessions = atuin / "sessions"
+        sessions.mkdir()
+        (sessions / "local-session").write_text("private session fixture\n")
+        before = snapshot(atuin)
+
+        self.assert_success(self.run_setup("--apply"))
+        self.assert_links()
+        self.assertFalse(atuin.is_symlink())
+        after = snapshot(atuin)
+        self.assertEqual(
+            after.pop("config.toml"),
+            ("link", str(self.repo / "atuin/config.toml")),
+        )
+        self.assertEqual(after, before)
 
     def test_install_apps_requires_apply(self):
         before = snapshot(self.root)

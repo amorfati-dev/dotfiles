@@ -1,6 +1,7 @@
 # Martin's dotfiles
 
-My Mac setup recipe: Homebrew tools and apps, Zsh, Git, Starship, and Ghostty.
+My Mac setup recipe: Homebrew tools and apps, Zsh, Git, Neovim, terminal appearance,
+window management, keyboard shortcuts, and utility preferences.
 These files help set up a fresh Mac and keep changes to my preferences in Git.
 Documents, photos, app data, passwords, and account sessions need their own backup.
 
@@ -8,15 +9,22 @@ Documents, photos, app data, passwords, and account sessions need their own back
 
 | File | Purpose |
 | --- | --- |
-| `Brewfile` | Homebrew-managed tools, apps, fonts, and taps recorded on 2026-09-14 |
+| `Brewfile` | Homebrew tools, apps, fonts, and dependencies required by these settings |
 | `zsh/.zprofile` | Homebrew and local executable paths for Apple Silicon or Intel |
 | `zsh/.zshrc` | Existing aliases, vi key bindings, completion, and shell integrations |
 | `git/config` | Main as the default branch, rebase on pull, and Delta diffs |
 | `git/ignore` | Global ignores for macOS metadata and editor temporary files |
 | `starship/starship.toml` | My current Starship prompt appearance |
 | `ghostty/config` | Catppuccin Mocha, JetBrainsMono Nerd Font, and font size 14 |
+| `nvim/` | Active Lua configuration, keybindings, theme, plugins, and plugin revision lockfile |
+| `tmux/.tmux.conf` | Ctrl+A prefix, splits, mouse support, and pane navigation |
+| `aerospace/` | Window manager configuration and window switcher |
+| `sketchybar/` | Menu bar appearance, workspaces, clock, Wi-Fi, and battery scripts |
+| `karabiner/` | Selected keyboard profile, enabled/disabled rules, and reusable rule assets |
+| `atuin/config.toml` | History-search preferences, without history or account data |
+| `htop/htoprc` | Process viewer layout and display preferences |
 | `examples/` | Templates for private settings that stay outside Git |
-| `setup.sh` | Preview changes, back up conflicts, and link the six configuration files |
+| `setup.sh` | Preview changes, back up conflicts, and link 13 configuration files or directories |
 
 The shell configuration consolidates repeated initialization commands from the
 old setup. Starship is the active prompt. Legacy Powerlevel10k and Oh My Zsh startup
@@ -80,6 +88,9 @@ Oh My Zsh's extra aliases are not bundled; the explicit `eza` and `bat` aliases 
 9. Open a new terminal and Ghostty. Sign into GitHub (`gh auth login`), Atuin, and
    other tools you use. Install apps not managed through Homebrew separately,
    restore their data, and grant permissions such as Accessibility when required.
+10. Follow the [app restore notes](docs/app-setup.md), especially Neovim's plugin
+    installation and the keyboard/window-manager steps. Linking configuration
+    does not launch apps or install Neovim's plugins by itself.
 
 ## How setup works
 
@@ -88,12 +99,15 @@ Running `./setup.sh` with no arguments is a preview and does not write anything.
 which point to the files in this repository. Keep the repository in place after
 applying it. Editing a linked file also edits the copy tracked by Git.
 
-Existing files, directories, and symlinks at the six destinations are moved to a
+Existing files, directories, and symlinks at the 13 destinations are moved to a
 unique folder under `~/.local/state/dotfiles/backups/` before replacement. The
 script prints each backup location. Already-correct links are left alone, so it
 can be run again. Symlinked parent directories are refused to avoid writing into
 an unexpected location. The installer currently uses `~/.config`; adapt it first
-if you use a custom `XDG_CONFIG_HOME`.
+if you use a custom `XDG_CONFIG_HOME`. Neovim, AeroSpace, SketchyBar, and Karabiner
+are linked as whole configuration directories; existing directories are backed
+up intact. Atuin is linked as a single config file so neighboring state stays in
+place. For Karabiner, directory linking also lets the app detect file changes.
 
 To undo an applied setting, remove only the corresponding symlink and move its
 saved original back to the original location. If no original existed, removing
@@ -127,6 +141,8 @@ diff -u Brewfile Brewfile.next
 Review the differences, then replace `Brewfile` with the new list if desired.
 Delete or rename a leftover `Brewfile.next` before generating another snapshot.
 Homebrew records requested packages and resolves their dependencies during install.
+Keep the explicit `prettier` and `felixkratz/formulae/sketchybar` entries even if a
+fresh dump omits them: the included Neovim and menu-bar settings need these tools.
 If it reports stale dependency metadata, review that separately before relying on
 the snapshot; this repository does not repair the existing installation.
 
@@ -138,9 +154,11 @@ and Git identity were not copied wholesale. `.gitignore` is a convenience, not a
 secret scanner; it cannot protect a secret added to a tracked file or remove
 something already committed. Review `git diff --cached` before every commit.
 
-The initial creation does not activate these settings on the current Mac. More
-app preferences, editor settings, and macOS preferences can be added deliberately
-later after checking their contents.
+Creating or updating the repository does not activate these settings on the current
+Mac. More app and macOS preferences can be added deliberately later after checking
+their contents. Karabiner automatic backups and Neovim's old backup configuration
+are excluded; downloaded plugins, parsers, language servers, undo files, sessions,
+and Atuin history/account data are not copied into this repository.
 
 ## Verification
 

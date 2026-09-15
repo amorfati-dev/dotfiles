@@ -1,4 +1,5 @@
-# Homebrew tools, apps, and fonts recorded on 2026-09-14.
+# Homebrew tools, apps, and fonts recorded on 2026-09-14,
+# plus dependencies required by the included app configurations.
 # Review before installing; software versions follow Homebrew availability.
 # Background services are not automatically enabled by this file.
 
@@ -31,6 +32,7 @@ brew "newsboat"
 brew "nmap"
 brew "node"
 brew "pandoc"
+brew "prettier"
 brew "powerlevel10k"
 brew "python@3.12"
 brew "python@3.13"
@@ -50,6 +52,8 @@ brew "zoxide"
 brew "zsh"
 brew "zsh-autosuggestions"
 brew "zsh-syntax-highlighting"
+# Required by the included SketchyBar configuration and AeroSpace integration.
+brew "felixkratz/formulae/sketchybar"
 cask "aerial"
 cask "aerospace"
 cask "alt-tab"

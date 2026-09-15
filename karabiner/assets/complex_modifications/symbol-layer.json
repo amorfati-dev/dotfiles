@@ -1,0 +1,56 @@
+{
+  "title": "Symbol-Layer für deutsches Layout (Hyper)",
+  "rules": [
+    {
+      "description": "Hyper + H/J/K/L/Ö/N/ß/Ä → [ { } ] | ~ \\ `",
+      "manipulators": [
+        {
+          "type": "basic",
+          "from": { "key_code": "h", "modifiers": { "mandatory": ["command", "control", "option", "shift"] } },
+          "to": [{ "key_code": "5", "modifiers": ["option"] }]
+        },
+        {
+          "type": "basic",
+          "from": { "key_code": "j", "modifiers": { "mandatory": ["command", "control", "option", "shift"] } },
+          "to": [{ "key_code": "8", "modifiers": ["option"] }]
+        },
+        {
+          "type": "basic",
+          "from": { "key_code": "k", "modifiers": { "mandatory": ["command", "control", "option", "shift"] } },
+          "to": [{ "key_code": "9", "modifiers": ["option"] }]
+        },
+        {
+          "type": "basic",
+          "from": { "key_code": "l", "modifiers": { "mandatory": ["command", "control", "option", "shift"] } },
+          "to": [{ "key_code": "6", "modifiers": ["option"] }]
+        },
+        {
+          "type": "basic",
+          "from": { "key_code": "semicolon", "modifiers": { "mandatory": ["command", "control", "option", "shift"] } },
+          "to": [{ "key_code": "7", "modifiers": ["option"] }]
+        },
+        {
+          "type": "basic",
+          "from": { "key_code": "n", "modifiers": { "mandatory": ["command", "control", "option", "shift"] } },
+          "to": [
+            { "key_code": "n", "modifiers": ["option"] },
+            { "key_code": "spacebar" }
+          ]
+        },
+        {
+          "type": "basic",
+          "from": { "key_code": "hyphen", "modifiers": { "mandatory": ["command", "control", "option", "shift"] } },
+          "to": [{ "key_code": "7", "modifiers": ["option", "shift"] }]
+        },
+        {
+          "type": "basic",
+          "from": { "key_code": "quote", "modifiers": { "mandatory": ["command", "control", "option", "shift"] } },
+          "to": [
+            { "key_code": "equal_sign", "modifiers": ["shift"] },
+            { "key_code": "spacebar" }
+          ]
+        }
+      ]
+    }
+  ]
+}

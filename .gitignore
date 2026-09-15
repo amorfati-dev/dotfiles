@@ -31,3 +31,16 @@ backups/
 Brewfile.next
 __pycache__/
 *.py[cod]
+
+# App state must stay local when configuration directories are linked.
+karabiner/automatic_backups/
+karabiner/log/
+nvim/after-old/
+nvim/keymap.html
+nvim/.netrwhist
+nvim/spell/*.add.spl
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
